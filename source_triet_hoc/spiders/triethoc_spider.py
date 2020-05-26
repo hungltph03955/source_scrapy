@@ -11,7 +11,7 @@ class TriethocSpiderSpider(scrapy.Spider):
         self.start_urls = self.gen_year()
 
     def gen_year(self):
-        domain = "triethoduongpho.net"
+        domain = "triethocduongpho.net"
         domains = []
         year_start = 2013
         year_end = 2021
