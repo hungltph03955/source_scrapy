@@ -1,2 +1,7 @@
 *.pyc
 xxx.json
+httpcache/*
+xxx.json
+abc.json
+download/*
+.scrapy/*

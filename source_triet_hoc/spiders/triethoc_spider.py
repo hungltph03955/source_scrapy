@@ -1,8 +1,23 @@
 # -*- coding: utf-8 -*-
 import scrapy
 
+from ..items import SourceTrietHocItem
+
 
 class TriethocSpiderSpider(scrapy.Spider):
+    custom_settings = {
+        "ITEM_PIPELINES": {'scrapy.pipelines.images.ImagesPipeline': 1},
+        'CONCURRENT_REQUESTS': 1,
+        "FILES_STORE": "download/file/",
+        "SPIDER_MIDDLEWARES": {
+            'source_triet_hoc.middlewares.SourceTrietHocSpiderMiddleware': 543,
+        },
+        "DOWNLOADER_MIDDLEWARES": {
+            'source_triet_hoc.middlewares.SourceTrietHocDownloaderMiddleware': 543,
+        },
+        "IMAGES_STORE": "download/media/image/"
+
+    }
     name = 'triethoc_spider'
     allowed_domains = ['triethocduongpho.net']
 
@@ -13,9 +28,9 @@ class TriethocSpiderSpider(scrapy.Spider):
     def gen_year(self):
         domain = "triethocduongpho.net"
         domains = []
-        year_start = 2013
+        year_start = 2020
         year_end = 2021
-        years = range(2013, 2020, 1)
+        years = range(year_start, year_end, 1)
         for year in years:
             domains.append(f"{domain}/{year}/")
 
@@ -48,7 +63,8 @@ class TriethocSpiderSpider(scrapy.Spider):
             yield scrapy.Request(list_la_item, self.parse_detail)
 
     def parse_detail(self, response):
-        item = {}
+        item = SourceTrietHocItem()
+
         title = response.xpath('//title/text()').extract_first()
         content = response.xpath(
             "//div[@class='entry-content']/div[1]").extract_first()
@@ -59,4 +75,7 @@ class TriethocSpiderSpider(scrapy.Spider):
 
         item["title"] = title
         item["content"] = content
+        item["image_urls"] = response.xpath(
+            '//div[@class="entry-featured"]/img/@src'
+        ).extract()
         yield item
