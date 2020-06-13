@@ -12,15 +12,6 @@ import re
 
 def filer_content(content):
     try:
-        content = content.replace("<br>", "</p>\n<p>")
-    except:
-        pass
-
-    try:
-        content = re.sub("<a.*?>(.+?)</a>", "", content)
-    except:
-        pass
-    try:
         content = re.sub("<strong.*?>(.+?)</strong>", "", content)
     except:
         pass
@@ -28,12 +19,13 @@ def filer_content(content):
         content = re.sub("<p.*?>(.+?)</strong></p>", "", content)
     except:
         pass
+    content = content.replace("<br>", "</p>\n<p>")
+    content = re.sub("<a.*?>(.+?)</a>", "", content)
+    content = re.sub("<p><script.*?(.+?)</script>", "", content)
     cont = re.match("<p><img(.+?)</p>", content)
     if cont is not None:
         a = f"<figure><img {cont.group(1)} </figure>"
         content = content.replace(cont.group(0), a)
-
-
     return content
 
 
