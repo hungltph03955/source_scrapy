@@ -2,7 +2,17 @@
 import scrapy
 
 from ..items import SourceTrietHocItem
+from scrapy.loader import ItemLoader
 
+class XpathControler(object):
+    title = '//title/text()'
+    content = "//div[@class='entry-content']/div[1]/p"
+    image_urls = '//div[@class="entry-featured"]/img/@src'
+    next_page = "//div[@class='pagination']/a/text()"
+    list_la = '//article/header/h2/a/@href'
+
+
+xpath_ctl = XpathControler()
 
 class TriethocSpiderSpider(scrapy.Spider):
     custom_settings = {
@@ -49,8 +59,7 @@ class TriethocSpiderSpider(scrapy.Spider):
         return list_page
 
     def parse(self, response):
-        next_page = response.xpath(
-            "//div[@class='pagination']/a/text()").extract()
+        next_page = response.xpath(xpath_ctl.next_page).extract()
         total_page = int(next_page[-1])
         list_page = self.gen_page(total_page, response.url)
 
@@ -58,24 +67,13 @@ class TriethocSpiderSpider(scrapy.Spider):
             yield scrapy.Request(item_page, self.parse_list)
 
     def parse_list(self, response):
-        list_la = response.xpath('//article/header/h2/a/@href').extract()
+        list_la = response.xpath(xpath_ctl.list_la).extract()
         for list_la_item in list_la:
             yield scrapy.Request(list_la_item, self.parse_detail)
 
     def parse_detail(self, response):
-        item = SourceTrietHocItem()
-
-        title = response.xpath('//title/text()').extract_first()
-        content = response.xpath(
-            "//div[@class='entry-content']/div[1]").extract_first()
-        try:
-            content = content.split("<hr>")[0]
-        except:
-            pass
-
-        item["title"] = title
-        item["content"] = content
-        item["image_urls"] = response.xpath(
-            '//div[@class="entry-featured"]/img/@src'
-        ).extract()
-        yield item
+        il = ItemLoader(item=SourceTrietHocItem(), response=response)
+        il.add_xpath('title', xpath_ctl.title)
+        il.add_xpath('content', xpath_ctl.content)
+        il.add_xpath('image_urls', xpath_ctl.image_urls)
+        return il.load_item()
