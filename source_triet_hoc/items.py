@@ -28,6 +28,12 @@ def filer_content(content):
         content = re.sub("<p.*?>(.+?)</strong></p>", "", content)
     except:
         pass
+    cont = re.match("<p><img(.+?)</p>", content)
+    if cont is not None:
+        a = f"<figure><img {cont.group(1)} </figure>"
+        content = content.replace(cont.group(0), a)
+
+
     return content
 
 
