@@ -6,7 +6,7 @@ from scrapy.loader import ItemLoader
 
 
 class XpathControler(object):
-    category = '//div[@class="navbar-category"][2]/ul/li/a@href'
+    categories = '//div[@class="navbar-category"][2]/ul/li/a/@href'
 
 
 xpath_ctl = XpathControler()
@@ -28,14 +28,12 @@ class TruyencvSpider(scrapy.Spider):
     }
     name = 'truyencv_spider'
     allowed_domains = ['truyencv.com']
+    start_urls = ['https://truyencv.com/']
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.start_urls = self.start_requests(self)
+    def parse(self, response):
+        categories = response.xpath(xpath_ctl.categories)
+        print(categories)
 
-    def start_requests(self, response):
-        category_link = response.xpath(xpath_ctl.category)
-        print(category_link)
 
     # def gen_year(self):
     #     domain = "triethocduongpho.net"

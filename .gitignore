@@ -7,3 +7,4 @@ download/*
 .scrapy/*
 .idea/*
 .DS_Store
+.pyc
