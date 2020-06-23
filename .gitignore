@@ -5,3 +5,5 @@ xxx.json
 abc.json
 download/*
 .scrapy/*
+.idea/*
+.DS_Store
