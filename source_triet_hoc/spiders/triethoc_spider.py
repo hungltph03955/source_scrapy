@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import scrapy
-
-from ..items import SourceTrietHocItem
 from scrapy.loader import ItemLoader
+from ..items import SourceTrietHocItem
+
 
 class XpathControler(object):
     title = '//title/text()'
@@ -10,6 +10,7 @@ class XpathControler(object):
     image_urls = '//div[@class="entry-featured"]/img/@src'
     next_page = "//div[@class='pagination']/a/text()"
     list_la = '//article/header/h2/a/@href'
+    img_content = '//figure/img/@src'
 
 
 xpath_ctl = XpathControler()
@@ -38,12 +39,11 @@ class TriethocSpiderSpider(scrapy.Spider):
     def gen_year(self):
         domain = "triethocduongpho.net"
         domains = []
-        year_start = 2020
+        year_start = 2013
         year_end = 2021
         years = range(year_start, year_end, 1)
         for year in years:
             domains.append(f"{domain}/{year}/")
-
         return domains
 
     def start_requests(self):
@@ -76,4 +76,5 @@ class TriethocSpiderSpider(scrapy.Spider):
         il.add_xpath('title', xpath_ctl.title)
         il.add_xpath('content', xpath_ctl.content)
         il.add_xpath('image_urls', xpath_ctl.image_urls)
+        il.add_xpath('image_urls', xpath_ctl.img_content)
         return il.load_item()
